@@ -1,0 +1,8 @@
+# Ignore Visual Studio temporary files, build results, and
+
+# 忽略编译输出文件夹
+bin/
+obj/
+
+# 忽略VS生成的配置文件
+.vs/
