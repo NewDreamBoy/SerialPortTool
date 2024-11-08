@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SerialPortTool.VIewModels
 {
-    internal class MySettingsControlViewModel
+    public partial class MySettingsControlViewModel : ObservableObject
     {
+        public MySettingsControlViewModel()
+        {
+            
+        }
     }
 }

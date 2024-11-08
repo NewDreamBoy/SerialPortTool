@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using SerialPortTool.VIewModels;
 
 namespace SerialPortTool.Views
 {
@@ -10,6 +11,7 @@ namespace SerialPortTool.Views
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new MainWindowViewModel();
         }
     }
 }

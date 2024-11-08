@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SerialPortTool.VIewModels;
 
 namespace SerialPortTool.Views
 {
@@ -22,6 +23,7 @@ namespace SerialPortTool.Views
     {
         public MySettingsControl()
         {
+            this.DataContext = new MySettingsControlViewModel();
             InitializeComponent();
         }
     }
