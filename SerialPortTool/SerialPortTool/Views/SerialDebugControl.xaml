@@ -26,13 +26,23 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <ComboBox hc:InfoElement.Title="COM口" />
-                <ComboBox hc:InfoElement.Title="波特率" />
-                <ComboBox hc:InfoElement.Title="数据位" />
-                <ComboBox hc:InfoElement.Title="停止位" />
-                <ComboBox hc:InfoElement.Title="校验位" />
-                <Button Width="120" Margin="0,20,0,0" Content="打开串口" Style="{StaticResource ButtonPrimary}" />
-
+                <ComboBox hc:InfoElement.Title="COM口" ItemsSource="{Binding PortNames}" SelectedItem="{Binding SelectedPortNames, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="波特率" ItemsSource="{Binding BaudRate}" SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="数据位" ItemsSource="{Binding DataBits}" SelectedItem="{Binding SelectedDataBits, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="停止位" ItemsSource="{Binding StopBits}" SelectedItem="{Binding SelectedStopBits, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="校验位" ItemsSource="{Binding Parity}" SelectedItem="{Binding SelectedParity, Mode=TwoWay}" />
+                <Button
+                    Width="120"
+                    Margin="0,20,0,0"
+                    Command="{Binding OpenSerialConnectionCommand}"
+                    Content="打开串口"
+                    Style="{StaticResource ButtonPrimary}" />
+                <Button
+                    Width="120"
+                    Margin="0,20,0,0"
+                    Command="{Binding CloseSerialConnectionCommand}"
+                    Content="关闭串口"
+                    Style="{StaticResource ButtonDanger}" />
             </StackPanel>
 
         </Grid>
