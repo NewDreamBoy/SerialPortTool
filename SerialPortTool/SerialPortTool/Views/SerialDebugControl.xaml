@@ -26,7 +26,7 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <ComboBox hc:InfoElement.Title="COM口" ItemsSource="{Binding PortNames}" SelectedItem="{Binding SelectedPortNames, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="COM口" ItemsSource="{Binding PortNames}" SelectedItem="{Binding SelectedPortName, Mode=TwoWay}" />
                 <ComboBox hc:InfoElement.Title="波特率" ItemsSource="{Binding BaudRate}" SelectedItem="{Binding SelectedBaudRate, Mode=TwoWay}" />
                 <ComboBox hc:InfoElement.Title="数据位" ItemsSource="{Binding DataBits}" SelectedItem="{Binding SelectedDataBits, Mode=TwoWay}" />
                 <ComboBox hc:InfoElement.Title="停止位" ItemsSource="{Binding StopBits}" SelectedItem="{Binding SelectedStopBits, Mode=TwoWay}" />
@@ -49,15 +49,36 @@
         <Grid Grid.Column="1">
             <StackPanel>
                 <GroupBox Height="280" Header="接收区" Style="{x:Null}">
-                    <TextBox />
+                    <TextBox
+                        Padding="5,5,0,0"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
+                        IsReadOnly="True"
+                        Text="{Binding TextBoxReceiveArea, UpdateSourceTrigger=PropertyChanged}" />
                 </GroupBox>
                 <GroupBox Height="120" Header="发送区" Style="{x:Null}">
-                    <TextBox />
+                    <TextBox Padding="5,5,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Text="{Binding TextBoxSendArea, UpdateSourceTrigger=PropertyChanged}" />
                 </GroupBox>
                 <Grid Margin="0,10,0,0">
                     <StackPanel FlowDirection="RightToLeft" Orientation="Horizontal">
-                        <Button Width="120" Margin="5,0,0,0" Content="发送内容" Style="{StaticResource ButtonSuccess}" />
-                        <Button Width="120" Margin="5,0,0,0" Content="清空内容" Style="{StaticResource ButtonWarning}" />
+                        <Button
+                            Width="120"
+                            Margin="5,0,0,0"
+                            Command="{Binding SendDataCommand}"
+                            Content="发送内容"
+                            Style="{StaticResource ButtonSuccess}" />
+                        <Button
+                            Width="120"
+                            Margin="5,0,0,0"
+                            Command="{Binding ClearReceiveAreaContentCommand}"
+                            Content="清空接收区"
+                            Style="{StaticResource ButtonWarning}" />
+                        <Button
+                            Width="120"
+                            Margin="5,0,0,0"
+                            Command="{Binding ClearSendAreaContentCommand}"
+                            Content="清空发送区"
+                            Style="{StaticResource ButtonWarning}" />
                     </StackPanel>
                 </Grid>
             </StackPanel>

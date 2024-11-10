@@ -1,16 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using HandyControl.Controls;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
 
 namespace SerialPortTool.VIewModels
 {
-    public partial class SerialDebugControlViewModel : ObservableObject
+    public partial class SerialDebugControlViewModel : ObservableRecipient
     {
+        #region 业务核心
+
         public SerialPortConfig SerialPortConfig { get; set; } = new SerialPortConfig();
 
-        private readonly SerialConnectionParameters _serialConnectionParameters = new SerialConnectionParameters();
         private SerialPortController SerialPortController => SerialPortController.Instance;
+
+        #endregion 业务核心
+
+        #region 串口参数
+
+        private readonly SerialConnectionParameters _serialConnectionParameters = new SerialConnectionParameters();
 
         [ObservableProperty] private List<string> _PortNames;
         [ObservableProperty] private List<int> _baudRate;
@@ -18,11 +27,27 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty] private List<int> _stopBits;
         [ObservableProperty] private List<string> _parity;
 
-        [ObservableProperty] private string _selectedPortNames;
+        #endregion 串口参数
+
+        #region 串口参数选择
+
+        [ObservableProperty] private string _selectedPortName;
         [ObservableProperty] private int _selectedBaudRate;
         [ObservableProperty] private int _selectedDataBits;
         [ObservableProperty] private int _selectedStopBits;
         [ObservableProperty] private string _selectedParity;
+
+        #endregion 串口参数选择
+
+        #region View
+
+        [ObservableProperty]
+        private string _textBoxReceiveArea;
+
+        [ObservableProperty]
+        private string _textBoxSendArea;
+
+        #endregion
 
         public SerialDebugControlViewModel()
         {
@@ -44,40 +69,62 @@ namespace SerialPortTool.VIewModels
         }
 
 
+        /// <summary>
+        /// 连接串口
+        /// </summary>
         [RelayCommand]
         public void OpenSerialConnection()
         {
-            //if (SerialPortController.IsSerialPortOpen())
-            //{
-            //    //TODO 弹出串口已经打开的提示信息
-            //    return;
-            //}
-
-   
-
-            _serialConnectionParameters.PortName = SelectedPortNames;
+            if (SelectedPortName == null || string.IsNullOrEmpty(SelectedPortName))
+            {
+                Growl.Warning("请选项要连接的串口设备");
+                return;
+            }
+            _serialConnectionParameters.PortName = SelectedPortName;
             _serialConnectionParameters.BaudRate = SelectedBaudRate;
             _serialConnectionParameters.DataBits = SelectedDataBits;
             _serialConnectionParameters.Parity = SelectedParity;
             _serialConnectionParameters.StopBits = SelectedStopBits;
-            if (SerialPortController.OpenPort(_serialConnectionParameters))
-            {
-
-            }
-
-
+            SerialPortController.OpenPort(_serialConnectionParameters);
+            StrongReferenceMessenger.Default.Send
+                ($"串口{_serialConnectionParameters.PortName}已连接 {_serialConnectionParameters.BaudRate} {_serialConnectionParameters.DataBits} {_serialConnectionParameters.StopBits} {_serialConnectionParameters.Parity}");
         }
 
+
+        /// <summary>
+        /// 关闭串口
+        /// </summary>
         [RelayCommand]
         public void CloseSerialConnection()
         {
-
+            SerialPortController.ClosePort();
+            StrongReferenceMessenger.Default.Send("");
         }
 
         [RelayCommand]
-        public void ToggleSerialConnection()
+        public void SendData()
         {
-        
+            SerialPortController.SendData(TextBoxSendArea);
         }
+
+        /// <summary>
+        /// 清空接收区
+        /// </summary>
+        [RelayCommand]
+        public void ClearReceiveAreaContent()
+        {
+            TextBoxReceiveArea = string.Empty;
+        }
+
+        /// <summary>
+        /// 清空发送区
+        /// </summary>
+        [RelayCommand]
+        public void ClearSendAreaContent()
+        {
+            TextBoxSendArea = string.Empty;
+        }
+
+
     }
 }

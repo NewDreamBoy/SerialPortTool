@@ -1,4 +1,5 @@
-﻿using SerialPortTool.Models;
+﻿using HandyControl.Controls;
+using SerialPortTool.Models;
 using System.IO.Ports;
 
 namespace SerialPortTool.Core
@@ -26,6 +27,12 @@ namespace SerialPortTool.Core
         {
             try
             {
+    
+                if (IsSerialPortOpen())
+                {
+                    Growl.Warning("当前已有连接的串口，如需更换串口请先关闭当前串口！");
+                    return false;
+                }
                 SerialPort = new SerialPort(serialConnectionParameters.PortName)
                 {
                     BaudRate = serialConnectionParameters.BaudRate,
@@ -33,17 +40,22 @@ namespace SerialPortTool.Core
                     StopBits = ToStopBits(serialConnectionParameters.StopBits),
                     Parity = ToParity(serialConnectionParameters.Parity),
                 };
-
                 SerialPort.Open();
+                Growl.Success("串口连接成功");
             }
             catch (Exception e)
             {
+                Growl.Fatal($"串口连接异常,异常信息：{e.Message}");
                 return false;
             }
             return true;
         }
 
 
+        /// <summary>
+        /// 获取当前设备上可用的串口名称
+        /// </summary>
+        /// <returns></returns>
         public string[] GetPortName()
         {
             return SerialPort.GetPortNames();
@@ -53,20 +65,29 @@ namespace SerialPortTool.Core
         /// 关闭串口
         /// </summary>
         /// <returns></returns>
-        public bool ClosePort()
+        public void ClosePort()
         {
-            return true;
+            if (IsSerialPortOpen())
+            {
+                SerialPort.Close();
+                Growl.Success("串口关闭连接成功");
+            }
         }
 
         /// <summary>
         /// 发送消息
         /// </summary>
         /// <returns></returns>
-        public bool SendData()
+        public void SendData(string content)
         {
-            return true;
+            if (!IsSerialPortOpen()) { Growl.Warning($"当前没有连接的串口，请先连接串口！"); return; }
+            SerialPort.Write(content);
         }
 
+        /// <summary>
+        /// 检查串口是否打开
+        /// </summary>
+        /// <returns></returns>
         public bool IsSerialPortOpen()
         {
             return SerialPort != null && SerialPort.IsOpen;
