@@ -9,6 +9,8 @@ namespace SerialPortTool.Core
     /// </summary>
     public class SerialPortController
     {
+        public event Action<string> DataReceived;
+
         private static readonly Lazy<SerialPortController> _instance =
             new Lazy<SerialPortController>(() => new SerialPortController());
 
@@ -42,6 +44,9 @@ namespace SerialPortTool.Core
                 };
                 SerialPort.Open();
                 Growl.Success("串口连接成功");
+
+                SerialPort.DataReceived += SerialPortDataReceived;
+
             }
             catch (Exception e)
             {
@@ -51,6 +56,11 @@ namespace SerialPortTool.Core
             return true;
         }
 
+        public void SerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            string data = SerialPort.ReadExisting();
+            DataReceived.Invoke(data);
+        }
 
         /// <summary>
         /// 获取当前设备上可用的串口名称
