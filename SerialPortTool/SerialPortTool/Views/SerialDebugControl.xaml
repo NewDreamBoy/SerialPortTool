@@ -2,6 +2,7 @@
     x:Class="SerialPortTool.Views.SerialDebugControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ap="clr-namespace:SerialPortTool.AttachedProperties"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:SerialPortTool.Views"
@@ -50,11 +51,12 @@
             <StackPanel>
                 <GroupBox Height="280" Header="接收区" Style="{x:Null}">
                     <TextBox
-                        Padding="5,5,0,0"
+                        x:Name="TempTextBox"
                         HorizontalContentAlignment="Left"
                         VerticalContentAlignment="Top"
+                        ap:TextBoxScrollBehavior.AutoScrollToEnd="True"
                         IsReadOnly="True"
-                        Text="{Binding TextBoxReceiveArea, UpdateSourceTrigger=PropertyChanged}" />
+                        Text="{Binding TextBoxReceiveArea}" />
                 </GroupBox>
                 <GroupBox Height="120" Header="发送区" Style="{x:Null}">
                     <TextBox Padding="5,5,0,0" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Text="{Binding TextBoxSendArea, UpdateSourceTrigger=PropertyChanged}" />

@@ -4,6 +4,9 @@ using CommunityToolkit.Mvvm.Messaging;
 using HandyControl.Controls;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
+using System;
+using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
@@ -16,7 +19,7 @@ namespace SerialPortTool.VIewModels
 
         public SerialPortConfig SerialPortConfig { get; set; } = new SerialPortConfig();
 
-        private SerialPortController SerialPortController => SerialPortController.Instance;
+        public SerialPortController SerialPortController => SerialPortController.Instance;
 
         #endregion 业务核心
 
@@ -52,9 +55,6 @@ namespace SerialPortTool.VIewModels
 
         #endregion View
 
-        private StringBuilder str = new StringBuilder();
-        private DispatcherTimer _timer;
-        private int maxItems = 1000; // 设置最大显示条数
 
         public SerialDebugControlViewModel()
         {
@@ -96,30 +96,19 @@ namespace SerialPortTool.VIewModels
             {
                 StrongReferenceMessenger.Default.Send
                ($"串口{_serialConnectionParameters.PortName}已连接 {_serialConnectionParameters.BaudRate} {_serialConnectionParameters.DataBits} {_serialConnectionParameters.StopBits} {_serialConnectionParameters.Parity}");
-                SerialPortController.DataReceived += OnDataReceived;
-
-                _timer = new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromMilliseconds(100) // 每100ms更新一次
-                };
-                _timer.Tick += (s, e) => UpdateTextBoxReceiveArea();
-                _timer.Start();
+                SerialPortController.SerialPort.DataReceived += SerialPortDataReceived;
             }
         }
 
-        private void OnDataReceived(string data)
+        public void SerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            str.Append($"{data}\n");
-        }
-
-        private void UpdateTextBoxReceiveArea()
-        {
-            if (str.Length > 0)
+            var data = SerialPortController.Instance.GetSerialPortBytes();
+            Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                TextBoxReceiveArea += str.ToString();
-                str.Clear();
-            }
+                TextBoxReceiveArea = data.ToString();
+            }));
         }
+    
 
         /// <summary>
         /// 关闭串口
@@ -129,7 +118,7 @@ namespace SerialPortTool.VIewModels
         {
             SerialPortController.ClosePort();
             StrongReferenceMessenger.Default.Send("");
-            SerialPortController.DataReceived -= OnDataReceived;
+            SerialPortController.SerialPort.DataReceived -= SerialPortDataReceived;
         }
 
         [RelayCommand]
@@ -144,7 +133,7 @@ namespace SerialPortTool.VIewModels
         [RelayCommand]
         public void ClearReceiveAreaContent()
         {
-            str.Clear();
+            SerialPortController.CloseMessage();
             TextBoxReceiveArea = string.Empty;
         }
 

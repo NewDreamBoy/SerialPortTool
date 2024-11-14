@@ -1,6 +1,8 @@
 ﻿using HandyControl.Controls;
 using SerialPortTool.Models;
 using System.IO.Ports;
+using System.Text;
+using System.Windows.Interop;
 
 namespace SerialPortTool.Core
 {
@@ -9,14 +11,14 @@ namespace SerialPortTool.Core
     /// </summary>
     public class SerialPortController
     {
-        public event Action<string> DataReceived;
-
         private static readonly Lazy<SerialPortController> _instance =
             new Lazy<SerialPortController>(() => new SerialPortController());
 
         public static SerialPortController Instance => _instance.Value;
 
-        private SerialPort SerialPort { get; set; }
+        public SerialPort SerialPort { get; set; }
+
+        private StringBuilder message = new StringBuilder();
 
         private SerialPortController() { }
 
@@ -29,7 +31,6 @@ namespace SerialPortTool.Core
         {
             try
             {
-    
                 if (IsSerialPortOpen())
                 {
                     Growl.Warning("当前已有连接的串口，如需更换串口请先关闭当前串口！");
@@ -44,9 +45,6 @@ namespace SerialPortTool.Core
                 };
                 SerialPort.Open();
                 Growl.Success("串口连接成功");
-
-                SerialPort.DataReceived += SerialPortDataReceived;
-
             }
             catch (Exception e)
             {
@@ -56,10 +54,32 @@ namespace SerialPortTool.Core
             return true;
         }
 
-        public void SerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
+        /// <summary>
+        /// 获取串口缓冲区的数据
+        /// </summary>
+        /// <returns></returns>
+        public StringBuilder GetSerialPortBytes()
         {
-            string data = SerialPort.ReadExisting();
-            DataReceived.Invoke(data);
+            //获取缓冲区中的字节数
+            int availableBytes = SerialPort.BytesToRead;
+            Byte[] buffer = new Byte[availableBytes];
+            if (availableBytes <= 0) return message;
+            //读取缓冲区中的数据
+            SerialPort.Read(buffer, 0, availableBytes);
+            string msg = "";
+            msg += $"[{DateTime.Now.ToString("HH:mm:ss.fff")}]  ";
+            msg += Encoding.UTF8.GetString(buffer);
+            message.Append(msg);
+            return message;
+        }
+
+
+        /// <summary>
+        /// 清空StringBuilder里面的数据
+        /// </summary>
+        public void CloseMessage()
+        {
+            message.Clear();
         }
 
         /// <summary>
@@ -79,6 +99,7 @@ namespace SerialPortTool.Core
         {
             if (IsSerialPortOpen())
             {
+                CloseMessage();
                 SerialPort.Close();
                 Growl.Success("串口关闭连接成功");
             }
