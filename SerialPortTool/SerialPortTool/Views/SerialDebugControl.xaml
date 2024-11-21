@@ -7,8 +7,8 @@
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:SerialPortTool.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="550"
+    d:DesignWidth="900"
     Background="White"
     mc:Ignorable="d">
     <Grid>
@@ -32,18 +32,23 @@
                 <ComboBox hc:InfoElement.Title="数据位" ItemsSource="{Binding DataBits}" SelectedItem="{Binding SelectedDataBits, Mode=TwoWay}" />
                 <ComboBox hc:InfoElement.Title="停止位" ItemsSource="{Binding StopBits}" SelectedItem="{Binding SelectedStopBits, Mode=TwoWay}" />
                 <ComboBox hc:InfoElement.Title="校验位" ItemsSource="{Binding Parity}" SelectedItem="{Binding SelectedParity, Mode=TwoWay}" />
-                <Button
-                    Width="120"
-                    Margin="0,20,0,0"
-                    Command="{Binding OpenSerialConnectionCommand}"
-                    Content="打开串口"
-                    Style="{StaticResource ButtonPrimary}" />
-                <Button
-                    Width="120"
-                    Margin="0,20,0,0"
-                    Command="{Binding CloseSerialConnectionCommand}"
-                    Content="关闭串口"
-                    Style="{StaticResource ButtonDanger}" />
+                <ComboBox hc:InfoElement.Title="发送格式" ItemsSource="{Binding SendDataFormat}" SelectedItem="{Binding SelectedSendDataFormat, Mode=TwoWay}" />
+                <ComboBox hc:InfoElement.Title="接收格式" ItemsSource="{Binding ReceiveDataFormat}" SelectedItem="{Binding SelectedReceiveDataFormat, Mode=TwoWay}" />
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button
+                        Width="80"
+                        Margin="5"
+                        Command="{Binding OpenSerialConnectionCommand}"
+                        Content="打开串口"
+                        Style="{StaticResource ButtonPrimary}" />
+                    <Button
+                        Width="80"
+                        Margin="5"
+                        Command="{Binding CloseSerialConnectionCommand}"
+                        Content="关闭串口"
+                        Style="{StaticResource ButtonDanger}" />
+                </StackPanel>
+
             </StackPanel>
 
         </Grid>

@@ -35,8 +35,8 @@
             <ContentControl Content="{Binding UserControl}" />
         </Grid>
 
-        <Grid Grid.Row="2" Margin="5">
-            <TextBlock FontSize="13" Text="{Binding InfoText}" />
+        <Grid Grid.Row="2">
+            <TextBlock Margin="2" FontSize="13" Text="{Binding InfoText}" />
         </Grid>
 
     </Grid>

@@ -1,4 +1,5 @@
-﻿using HandyControl.Controls;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using HandyControl.Controls;
 using SerialPortTool.Models;
 using System.IO.Ports;
 using System.Text;
@@ -20,7 +21,12 @@ namespace SerialPortTool.Core
 
         private StringBuilder message = new StringBuilder();
 
-        private SerialPortController() { }
+        private SerialPortStatusInfo SerialPortStatusInfo { get; set; }
+
+        private SerialPortController()
+        {
+            SerialPortStatusInfo = new SerialPortStatusInfo { StatusCode = 0, StatusInfo = "" };
+        }
 
 
         /// <summary>
@@ -33,7 +39,7 @@ namespace SerialPortTool.Core
             {
                 if (IsSerialPortOpen())
                 {
-                    Growl.Warning("当前已有连接的串口，如需更换串口请先关闭当前串口！");
+                    NotifyMainWindow(1, "串口连接失败：当前已有连接的串口，如需更换串口请先关闭当前串口！");
                     return false;
                 }
                 SerialPort = new SerialPort(serialConnectionParameters.PortName)
@@ -44,11 +50,11 @@ namespace SerialPortTool.Core
                     Parity = ToParity(serialConnectionParameters.Parity),
                 };
                 SerialPort.Open();
-                Growl.Success("串口连接成功");
+                NotifyMainWindow(0, "串口连接成功");
             }
             catch (Exception e)
             {
-                Growl.Fatal($"串口连接异常,异常信息：{e.Message}");
+                NotifyMainWindow(2, $"串口连接异常：异常信息：{e.Message}");
                 return false;
             }
             return true;
@@ -58,7 +64,7 @@ namespace SerialPortTool.Core
         /// 获取串口缓冲区的数据
         /// </summary>
         /// <returns></returns>
-        public StringBuilder GetSerialPortBytes()
+        public StringBuilder GetSerialPortBytes(ReceiveFormat receiveFormat)
         {
             //获取缓冲区中的字节数
             int availableBytes = SerialPort.BytesToRead;
@@ -68,11 +74,18 @@ namespace SerialPortTool.Core
             SerialPort.Read(buffer, 0, availableBytes);
             string msg = "";
             msg += $"[{DateTime.Now.ToString("HH:mm:ss.fff")}]  ";
-            msg += Encoding.UTF8.GetString(buffer);
-            message.Append(msg);
+            switch (receiveFormat)
+            {
+                case ReceiveFormat.Text:
+                    msg += Encoding.UTF8.GetString(buffer);
+                    break;
+                case ReceiveFormat.Hex:
+                    msg += BitConverter.ToString(buffer).Replace("-", " ");
+                    break;
+            }
+            message.Append($"{msg}\n");
             return message;
         }
-
 
         /// <summary>
         /// 清空StringBuilder里面的数据
@@ -109,10 +122,24 @@ namespace SerialPortTool.Core
         /// 发送消息
         /// </summary>
         /// <returns></returns>
-        public void SendData(string content)
+        public void SendData(string content, SendFormat sendFormat)
         {
-            if (!IsSerialPortOpen()) { Growl.Warning($"当前没有连接的串口，请先连接串口！"); return; }
-            SerialPort.Write(content);
+            if (!IsSerialPortOpen())
+            {
+                NotifyMainWindow(1, "当前没有连接的串口，请先连接串口！");
+                return;
+            }
+
+            switch (sendFormat)
+            {
+                case SendFormat.Text:
+                    SerialPort.Write(content);
+                    break;
+                case SendFormat.Hex:
+                    var bytes = TextConversionManager.HexStringToByteArray(content);
+                    SerialPort.Write(bytes, 0, bytes.Length);
+                    break;
+            }
         }
 
         /// <summary>
@@ -147,6 +174,34 @@ namespace SerialPortTool.Core
                 2 => StopBits.Two,
                 _ => StopBits.None
             };
+        }
+
+        /// <summary>
+        /// 通知主窗口
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <param name="message"></param>
+        /// <param name="isNotificationPopup"></param>
+        public void NotifyMainWindow(int statusCode, string message,bool isNotificationPopup = true)
+        {
+            SerialPortStatusInfo.StatusCode = (StatusCode)statusCode;
+            SerialPortStatusInfo.StatusInfo = message;
+            StrongReferenceMessenger.Default.Send(SerialPortStatusInfo);
+            if(isNotificationPopup)
+            {
+                switch (statusCode)
+                {
+                    case 0:
+                        Growl.Success(message);
+                        break;
+                    case 1:
+                        Growl.Warning(message);
+                        break;
+                    case 2:
+                        Growl.Fatal(message);
+                        break;
+                }
+            }
         }
     }
 }

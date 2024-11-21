@@ -22,6 +22,10 @@
         /// </summary>
         public List<string> Parity { get; set; } = ["None", "Odd", "Even"];
 
+        public List<string> SendDataFormat { get; set; } = ["Text","Hex"];
+
+        public List<string> ReceiveDataFormat { get; set; } = ["Text","Hex"];
+
         public SerialPortConfig()
         {
 

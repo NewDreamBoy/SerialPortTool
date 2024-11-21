@@ -4,12 +4,8 @@ using CommunityToolkit.Mvvm.Messaging;
 using HandyControl.Controls;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
-using System;
-using System.Collections.ObjectModel;
 using System.IO.Ports;
-using System.Text;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace SerialPortTool.VIewModels
 {
@@ -20,6 +16,8 @@ namespace SerialPortTool.VIewModels
         public SerialPortConfig SerialPortConfig { get; set; } = new SerialPortConfig();
 
         public SerialPortController SerialPortController => SerialPortController.Instance;
+
+        public SerialPortStatusInfo StatusInfo;
 
         #endregion 业务核心
 
@@ -32,6 +30,8 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty] private List<int> _dataBits;
         [ObservableProperty] private List<int> _stopBits;
         [ObservableProperty] private List<string> _parity;
+        [ObservableProperty] private List<string> _sendDataFormat;
+        [ObservableProperty] private List<string> _receiveDataFormat;
 
         #endregion 串口参数
 
@@ -42,10 +42,12 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty] private int _selectedDataBits;
         [ObservableProperty] private int _selectedStopBits;
         [ObservableProperty] private string _selectedParity;
+        [ObservableProperty] private string _selectedSendDataFormat;
+        [ObservableProperty] private string _selectedReceiveDataFormat;
 
         #endregion 串口参数选择
 
-        #region View
+        #region View视图绑定相关
 
         [ObservableProperty]
         private string _textBoxReceiveArea;
@@ -53,12 +55,12 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty]
         private string _textBoxSendArea;
 
-        #endregion View
-
+        #endregion View视图绑定相关
 
         public SerialDebugControlViewModel()
         {
             InitSerialParameter();
+            StatusInfo = new SerialPortStatusInfo();
         }
 
         public void InitSerialParameter()
@@ -68,11 +70,15 @@ namespace SerialPortTool.VIewModels
             DataBits = SerialPortConfig.DataBits;
             StopBits = SerialPortConfig.StopBits;
             Parity = SerialPortConfig.Parity;
+            SendDataFormat = SerialPortConfig.SendDataFormat;
+            ReceiveDataFormat = SerialPortConfig.ReceiveDataFormat;
 
             SelectedBaudRate = BaudRate[0];  //默认波特率9600
             SelectedDataBits = DataBits[1];  //默认数据位8
             SelectedStopBits = StopBits[0];  //停止位
             SelectedParity = Parity[0];      //校验位
+            SelectedSendDataFormat = SendDataFormat[0];  //默认发送数据格式
+            SelectedReceiveDataFormat = ReceiveDataFormat[0]; //默认接收数据格式
         }
 
         /// <summary>
@@ -83,7 +89,7 @@ namespace SerialPortTool.VIewModels
         {
             if (SelectedPortName == null || string.IsNullOrEmpty(SelectedPortName))
             {
-                Growl.Warning("请选项要连接的串口设备");
+                SerialPortController.NotifyMainWindow(1, "请选项要连接的串口设备");
                 return;
             }
             _serialConnectionParameters.PortName = SelectedPortName;
@@ -91,24 +97,42 @@ namespace SerialPortTool.VIewModels
             _serialConnectionParameters.DataBits = SelectedDataBits;
             _serialConnectionParameters.Parity = SelectedParity;
             _serialConnectionParameters.StopBits = SelectedStopBits;
+            if (Enum.TryParse(SelectedSendDataFormat, out SendFormat sendFormat))
+            {
+                _serialConnectionParameters.SendFormat = sendFormat;
+            }
+            else
+            {
+                SerialPortController.NotifyMainWindow(1, "程序异常：发送数据格式转换失败错误");
+            }
+            if (Enum.TryParse(SelectedReceiveDataFormat, out ReceiveFormat receiveFormat))
+            {
+                _serialConnectionParameters.ReceiveFormat = receiveFormat;
+            }
+            else
+            {
+                SerialPortController.NotifyMainWindow(1, "程序异常：接收数据格式转换失败错误");
+            }
 
             if (SerialPortController.OpenPort(_serialConnectionParameters))
             {
-                StrongReferenceMessenger.Default.Send
-               ($"串口{_serialConnectionParameters.PortName}已连接 {_serialConnectionParameters.BaudRate} {_serialConnectionParameters.DataBits} {_serialConnectionParameters.StopBits} {_serialConnectionParameters.Parity}");
                 SerialPortController.SerialPort.DataReceived += SerialPortDataReceived;
             }
         }
 
+        /// <summary>
+        /// 串口数据接收事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void SerialPortDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            var data = SerialPortController.Instance.GetSerialPortBytes();
+            var data = SerialPortController.Instance.GetSerialPortBytes(_serialConnectionParameters.ReceiveFormat);
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 TextBoxReceiveArea = data.ToString();
             }));
         }
-    
 
         /// <summary>
         /// 关闭串口
@@ -117,14 +141,19 @@ namespace SerialPortTool.VIewModels
         public void CloseSerialConnection()
         {
             SerialPortController.ClosePort();
-            StrongReferenceMessenger.Default.Send("");
+            StatusInfo.StatusCode = 0;
+            StatusInfo.StatusInfo = "关闭串口成功";
+            StrongReferenceMessenger.Default.Send(StatusInfo);
             SerialPortController.SerialPort.DataReceived -= SerialPortDataReceived;
         }
 
+        /// <summary>
+        /// 发送数据
+        /// </summary>
         [RelayCommand]
         public void SendData()
         {
-            SerialPortController.SendData(TextBoxSendArea);
+            SerialPortController.SendData(TextBoxSendArea, _serialConnectionParameters.SendFormat);
         }
 
         /// <summary>
