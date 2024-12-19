@@ -86,6 +86,12 @@
                             Command="{Binding ClearSendAreaContentCommand}"
                             Content="清空发送区"
                             Style="{StaticResource ButtonWarning}" />
+                        <Button
+                            Width="120"
+                            Margin="5,0,0,0"
+                            Command="{Binding OpenSaveConfigurationInterfaceCommand}"
+                            Content="保存当前配置"
+                            Style="{StaticResource ButtonPrimary}" />
                     </StackPanel>
                 </Grid>
             </StackPanel>

@@ -9,8 +9,8 @@ namespace SerialPortTool.VIewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        private readonly SerialDebugControl _serialDebugControl = new SerialDebugControl();
-        private readonly MySettingsControl _settingsControl = new MySettingsControl();
+        private readonly SerialDebugControl _serialDebugControl = new();
+        private readonly MySettingsControl _settingsControl = new();
 
         [ObservableProperty]
         private UserControl _userControl;

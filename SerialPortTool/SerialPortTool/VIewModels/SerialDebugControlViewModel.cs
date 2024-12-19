@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using HandyControl.Controls;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
+using SerialPortTool.Views;
 using System.IO.Ports;
 using System.Windows;
 
@@ -173,6 +173,18 @@ namespace SerialPortTool.VIewModels
         public void ClearSendAreaContent()
         {
             TextBoxSendArea = string.Empty;
+        }
+
+        /// <summary>
+        /// 打开保存配置界面
+        /// </summary>
+        [RelayCommand]
+        public void OpenSaveConfigurationInterface()
+        {
+            var saveConfigurationVm = new SaveConfigurationViewModel(_serialConnectionParameters);
+            var saveConfigurationWindow = new SaveConfigurationWindow
+                { DataContext = saveConfigurationVm };
+            saveConfigurationWindow.Show();
         }
     }
 }

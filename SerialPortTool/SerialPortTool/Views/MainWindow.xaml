@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:SerialPortTool"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="SerialPortTool"
-    Width="900"
+    Width="950"
     Height="550"
     mc:Ignorable="d">
     <Grid>
