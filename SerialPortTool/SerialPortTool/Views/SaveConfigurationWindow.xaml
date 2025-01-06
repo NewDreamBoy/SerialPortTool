@@ -72,7 +72,6 @@
                     Style="{StaticResource TextBoxExtend}"
                     Text="{Binding ConfigurationNote, Mode=TwoWay}" />
                 <GroupBox Margin="0,6,0,0" hc:TitleElement.TitlePlacement="Left" Header="封面图：" Style="{StaticResource GroupBoxOriginal}">
-                    <!--<hc:Gravatar HorizontalAlignment="Left" Source="{Binding DemoModel.ImageSource}" />-->
                     <hc:ImageSelector Width="80" Height="80" HorizontalAlignment="Left">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="ImageSelected">
