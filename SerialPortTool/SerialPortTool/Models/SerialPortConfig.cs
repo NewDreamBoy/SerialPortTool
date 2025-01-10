@@ -1,7 +1,15 @@
 ﻿namespace SerialPortTool.Models
 {
+    /// <summary>
+    /// 串口配置
+    /// </summary>
     public class SerialPortConfig
     {
+        /// <summary>
+        /// COM口
+        /// </summary>
+        public List<string> PortNames { get; set; }
+
         /// <summary>
         /// 波特率
         /// </summary>
@@ -22,13 +30,14 @@
         /// </summary>
         public List<string> Parity { get; set; } = ["None", "Odd", "Even"];
 
+        /// <summary>
+        /// 发送数据格式
+        /// </summary>
         public List<string> SendDataFormat { get; set; } = ["Text","Hex"];
 
+        /// <summary>
+        /// 接收数据格式
+        /// </summary>
         public List<string> ReceiveDataFormat { get; set; } = ["Text","Hex"];
-
-        public SerialPortConfig()
-        {
-
-        }
     }
 }

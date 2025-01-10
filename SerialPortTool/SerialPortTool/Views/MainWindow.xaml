@@ -3,9 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:SerialPortTool"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="SerialPortTool"
     Width="950"
@@ -36,8 +34,10 @@
         </Grid>
 
         <Grid Grid.Row="2">
-            <TextBlock Margin="2" FontSize="13" Text="{Binding InfoText}" />
+            <TextBlock
+                Margin="2"
+                FontSize="13"
+                Text="{Binding InfoText}" />
         </Grid>
-
     </Grid>
 </Window>

@@ -12,22 +12,28 @@ namespace SerialPortTool.Core
     /// </summary>
     public class SerialPortController
     {
+        #region 单例
+
         private static readonly Lazy<SerialPortController> _instance =
             new Lazy<SerialPortController>(() => new SerialPortController());
-
         public static SerialPortController Instance => _instance.Value;
 
-        public SerialPort SerialPort { get; set; }
 
-        private StringBuilder message = new StringBuilder();
+        #endregion
 
-        private SerialPortStatusInfo SerialPortStatusInfo { get; set; }
+        /// <summary>
+        /// 当前串口
+        /// </summary>
+        public SerialPort? SerialPort { get; set; }
+
+        private readonly StringBuilder _message = new ();
+
+        private SerialPortStatusInfo SerialPortStatusInfo { get; } = new();
 
         private SerialPortController()
         {
-            SerialPortStatusInfo = new SerialPortStatusInfo { StatusCode = 0, StatusInfo = "" };
-        }
 
+        }
 
         /// <summary>
         /// 打开串口
@@ -69,7 +75,7 @@ namespace SerialPortTool.Core
             //获取缓冲区中的字节数
             int availableBytes = SerialPort.BytesToRead;
             Byte[] buffer = new Byte[availableBytes];
-            if (availableBytes <= 0) return message;
+            if (availableBytes <= 0) return _message;
             //读取缓冲区中的数据
             SerialPort.Read(buffer, 0, availableBytes);
             string msg = "";
@@ -83,8 +89,8 @@ namespace SerialPortTool.Core
                     msg += BitConverter.ToString(buffer).Replace("-", " ");
                     break;
             }
-            message.Append($"{msg}\n");
-            return message;
+            _message.Append($"{msg}\n");
+            return _message;
         }
 
         /// <summary>
@@ -92,7 +98,7 @@ namespace SerialPortTool.Core
         /// </summary>
         public void CloseMessage()
         {
-            message.Clear();
+            _message.Clear();
         }
 
         /// <summary>
@@ -110,12 +116,10 @@ namespace SerialPortTool.Core
         /// <returns></returns>
         public void ClosePort()
         {
-            if (IsSerialPortOpen())
-            {
-                CloseMessage();
-                SerialPort.Close();
-                Growl.Success("串口关闭连接成功");
-            }
+            if (!IsSerialPortOpen()) return;
+            SerialPort?.Close();
+            CloseMessage();
+            NotifyMainWindow(0, "串口关闭连接成功");
         }
 
         /// <summary>
@@ -133,12 +137,15 @@ namespace SerialPortTool.Core
             switch (sendFormat)
             {
                 case SendFormat.Text:
-                    SerialPort.Write(content);
+                    SerialPort?.Write(content);
                     break;
                 case SendFormat.Hex:
                     var bytes = TextConversionManager.HexStringToByteArray(content);
-                    SerialPort.Write(bytes, 0, bytes.Length);
+                    SerialPort?.Write(bytes, 0, bytes.Length);
                     break;
+                default:
+                    NotifyMainWindow(2, "程序异常错误");
+                    throw new ArgumentOutOfRangeException(nameof(sendFormat), sendFormat, null);
             }
         }
 
@@ -148,7 +155,7 @@ namespace SerialPortTool.Core
         /// <returns></returns>
         public bool IsSerialPortOpen()
         {
-            return SerialPort != null && SerialPort.IsOpen;
+            return SerialPort is { IsOpen: true };
         }
 
         /// <summary>
@@ -182,23 +189,23 @@ namespace SerialPortTool.Core
         /// <param name="statusCode"></param>
         /// <param name="message"></param>
         /// <param name="isNotificationPopup"></param>
-        public void NotifyMainWindow(int statusCode, string message,bool isNotificationPopup = true)
+        public void NotifyMainWindow(int statusCode, string mess,bool isNotificationPopup = true)
         {
             SerialPortStatusInfo.StatusCode = (StatusCode)statusCode;
-            SerialPortStatusInfo.StatusInfo = message;
+            SerialPortStatusInfo.StatusInfo = mess;
             StrongReferenceMessenger.Default.Send(SerialPortStatusInfo);
             if(isNotificationPopup)
             {
                 switch (statusCode)
                 {
                     case 0:
-                        Growl.Success(message);
+                        Growl.Success(mess);
                         break;
                     case 1:
-                        Growl.Warning(message);
+                        Growl.Warning(mess);
                         break;
                     case 2:
-                        Growl.Fatal(message);
+                        Growl.Fatal(mess);
                         break;
                 }
             }

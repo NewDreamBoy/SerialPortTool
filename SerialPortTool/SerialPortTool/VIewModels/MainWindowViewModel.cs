@@ -16,7 +16,7 @@ namespace SerialPortTool.VIewModels
         private UserControl _userControl;
 
         [ObservableProperty]
-        private string _infoText;
+        private string? _infoText;
 
         public MainWindowViewModel()
         {

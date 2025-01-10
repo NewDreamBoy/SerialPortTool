@@ -11,27 +11,27 @@ namespace SerialPortTool.VIewModels
 {
     public partial class SerialDebugControlViewModel : ObservableRecipient
     {
-        #region 业务核心
+        #region 核心业务
 
-        public SerialPortConfig SerialPortConfig { get; set; } = new SerialPortConfig();
+        /// <summary>
+        /// 串口控制器
+        /// </summary>
+        private SerialPortController SerialPortController => SerialPortController.Instance;
 
-        public SerialPortController SerialPortController => SerialPortController.Instance;
-
-        public SerialPortStatusInfo StatusInfo;
-
-        #endregion 业务核心
+        #endregion 核心业务
 
         #region 串口参数
 
-        private readonly SerialConnectionParameters _serialConnectionParameters = new SerialConnectionParameters();
+        /// <summary>
+        /// 串口选项配置保存类
+        /// </summary>
+        private readonly SerialConnectionParameters _serialConnectionParameters = new();
 
-        [ObservableProperty] private List<string> _PortNames;
-        [ObservableProperty] private List<int> _baudRate;
-        [ObservableProperty] private List<int> _dataBits;
-        [ObservableProperty] private List<int> _stopBits;
-        [ObservableProperty] private List<string> _parity;
-        [ObservableProperty] private List<string> _sendDataFormat;
-        [ObservableProperty] private List<string> _receiveDataFormat;
+        /// <summary>
+        /// 串口选项默认参数
+        /// </summary>
+        [ObservableProperty]
+        private SerialPortConfig _defaultSerialPortConfig = new();
 
         #endregion 串口参数
 
@@ -60,25 +60,20 @@ namespace SerialPortTool.VIewModels
         public SerialDebugControlViewModel()
         {
             InitSerialParameter();
-            StatusInfo = new SerialPortStatusInfo();
         }
 
+        /// <summary>
+        /// 初始化串口参数
+        /// </summary>
         public void InitSerialParameter()
         {
-            PortNames = SerialPortController.GetPortName().ToList();
-            BaudRate = SerialPortConfig.BaudRate;
-            DataBits = SerialPortConfig.DataBits;
-            StopBits = SerialPortConfig.StopBits;
-            Parity = SerialPortConfig.Parity;
-            SendDataFormat = SerialPortConfig.SendDataFormat;
-            ReceiveDataFormat = SerialPortConfig.ReceiveDataFormat;
-
-            SelectedBaudRate = BaudRate[0];  //默认波特率9600
-            SelectedDataBits = DataBits[1];  //默认数据位8
-            SelectedStopBits = StopBits[0];  //停止位
-            SelectedParity = Parity[0];      //校验位
-            SelectedSendDataFormat = SendDataFormat[0];  //默认发送数据格式
-            SelectedReceiveDataFormat = ReceiveDataFormat[0]; //默认接收数据格式
+            DefaultSerialPortConfig.PortNames = SerialPortController.GetPortName().ToList();        //获取本机串口设备
+            SelectedBaudRate = DefaultSerialPortConfig.BaudRate[0];                                 //默认波特率9600
+            SelectedDataBits = DefaultSerialPortConfig.DataBits[1];                                 //默认数据位8
+            SelectedStopBits = DefaultSerialPortConfig.StopBits[0];                                 //停止位
+            SelectedParity = DefaultSerialPortConfig.Parity[0];                                     //校验位
+            SelectedSendDataFormat = DefaultSerialPortConfig.SendDataFormat[0];                     //默认发送数据格式
+            SelectedReceiveDataFormat = DefaultSerialPortConfig.ReceiveDataFormat[0];               //默认接收数据格式
         }
 
         /// <summary>
@@ -87,16 +82,18 @@ namespace SerialPortTool.VIewModels
         [RelayCommand]
         public void OpenSerialConnection()
         {
-            if (SelectedPortName == null || string.IsNullOrEmpty(SelectedPortName))
+            if (string.IsNullOrEmpty(SelectedPortName))
             {
                 SerialPortController.NotifyMainWindow(1, "请选项要连接的串口设备");
                 return;
             }
+
             _serialConnectionParameters.PortName = SelectedPortName;
             _serialConnectionParameters.BaudRate = SelectedBaudRate;
             _serialConnectionParameters.DataBits = SelectedDataBits;
             _serialConnectionParameters.Parity = SelectedParity;
             _serialConnectionParameters.StopBits = SelectedStopBits;
+
             if (Enum.TryParse(SelectedSendDataFormat, out SendFormat sendFormat))
             {
                 _serialConnectionParameters.SendFormat = sendFormat;
@@ -114,9 +111,17 @@ namespace SerialPortTool.VIewModels
                 SerialPortController.NotifyMainWindow(1, "程序异常：接收数据格式转换失败错误");
             }
 
-            if (SerialPortController.OpenPort(_serialConnectionParameters))
+            try
             {
-                SerialPortController.SerialPort.DataReceived += SerialPortDataReceived;
+                if (SerialPortController.OpenPort(_serialConnectionParameters))
+                    SerialPortController.SerialPort!.DataReceived += SerialPortDataReceived;
+                else
+                    SerialPortController.NotifyMainWindow(1, "打开串口失败");
+            }
+            catch (Exception e)
+            {
+                SerialPortController.NotifyMainWindow(2, $"打开串口时发生异常：{e.Message}");
+                throw;
             }
         }
 
@@ -140,10 +145,9 @@ namespace SerialPortTool.VIewModels
         [RelayCommand]
         public void CloseSerialConnection()
         {
+            if (!SerialPortController.Instance.IsSerialPortOpen()) return;
             SerialPortController.ClosePort();
-            StatusInfo.StatusCode = 0;
-            StatusInfo.StatusInfo = "关闭串口成功";
-            StrongReferenceMessenger.Default.Send(StatusInfo);
+            SerialPortController.NotifyMainWindow(0, "关闭串口成功");
             SerialPortController.SerialPort.DataReceived -= SerialPortDataReceived;
         }
 
@@ -183,7 +187,7 @@ namespace SerialPortTool.VIewModels
         {
             var saveConfigurationVm = new SaveConfigurationViewModel(_serialConnectionParameters);
             var saveConfigurationWindow = new SaveConfigurationWindow
-                { DataContext = saveConfigurationVm };
+            { DataContext = saveConfigurationVm };
             saveConfigurationWindow.Show();
         }
     }
