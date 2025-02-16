@@ -13,7 +13,6 @@
         public string Parity { get; set; }
         public SendFormat SendFormat { get; set; }
         public ReceiveFormat ReceiveFormat { get; set; }
-
     }
 
     public enum SendFormat

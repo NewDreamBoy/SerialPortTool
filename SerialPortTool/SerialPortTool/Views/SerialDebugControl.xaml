@@ -29,32 +29,32 @@
                 <ComboBox
                     hc:InfoElement.Title="COM口"
                     ItemsSource="{Binding DefaultSerialPortConfig.PortNames}"
-                    SelectedItem="{Binding PortNames, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedPortName, Mode=TwoWay}" />
 
                 <ComboBox
                     hc:InfoElement.Title="波特率"
                     ItemsSource="{Binding DefaultSerialPortConfig.BaudRate, Mode=TwoWay}"
-                    SelectedItem="{Binding BaudRate}" />
+                    SelectedItem="{Binding SelectedBaudRate}" />
                 <ComboBox
                     hc:InfoElement.Title="数据位"
                     ItemsSource="{Binding DefaultSerialPortConfig.DataBits}"
-                    SelectedItem="{Binding DataBits, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedDataBits, Mode=TwoWay}" />
                 <ComboBox
                     hc:InfoElement.Title="停止位"
                     ItemsSource="{Binding DefaultSerialPortConfig.StopBits}"
-                    SelectedItem="{Binding StopBits, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedStopBits, Mode=TwoWay}" />
                 <ComboBox
                     hc:InfoElement.Title="校验位"
                     ItemsSource="{Binding DefaultSerialPortConfig.Parity}"
-                    SelectedItem="{Binding Parity, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedParity, Mode=TwoWay}" />
                 <ComboBox
                     hc:InfoElement.Title="发送格式"
                     ItemsSource="{Binding DefaultSerialPortConfig.SendDataFormat}"
-                    SelectedItem="{Binding SendDataFormat, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedSendDataFormat, Mode=TwoWay}" />
                 <ComboBox
                     hc:InfoElement.Title="接收格式"
                     ItemsSource="{Binding DefaultSerialPortConfig.ReceiveDataFormat}"
-                    SelectedItem="{Binding ReceiveDataFormat, Mode=TwoWay}" />
+                    SelectedItem="{Binding SelectedReceiveDataFormat, Mode=TwoWay}" />
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Button
                         Width="80"

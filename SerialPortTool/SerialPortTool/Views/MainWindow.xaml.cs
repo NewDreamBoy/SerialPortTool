@@ -1,5 +1,6 @@
-﻿using System.Windows;
-using SerialPortTool.VIewModels;
+﻿using SerialPortTool.VIewModels;
+using System.Windows;
+using SerialPortTool.Core;
 
 namespace SerialPortTool.Views
 {
@@ -8,6 +9,7 @@ namespace SerialPortTool.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             InitializeComponent();

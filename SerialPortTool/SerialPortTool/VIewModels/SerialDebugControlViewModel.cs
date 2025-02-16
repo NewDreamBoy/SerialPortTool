@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
 using SerialPortTool.Views;
@@ -100,7 +99,7 @@ namespace SerialPortTool.VIewModels
             }
             else
             {
-                SerialPortController.NotifyMainWindow(1, "程序异常：发送数据格式转换失败错误");
+                SerialPortController.NotifyMainWindow(2, "程序异常：发送数据格式转换失败错误");
             }
             if (Enum.TryParse(SelectedReceiveDataFormat, out ReceiveFormat receiveFormat))
             {
@@ -108,7 +107,7 @@ namespace SerialPortTool.VIewModels
             }
             else
             {
-                SerialPortController.NotifyMainWindow(1, "程序异常：接收数据格式转换失败错误");
+                SerialPortController.NotifyMainWindow(2, "程序异常：接收数据格式转换失败错误");
             }
 
             try
@@ -120,7 +119,7 @@ namespace SerialPortTool.VIewModels
             }
             catch (Exception e)
             {
-                SerialPortController.NotifyMainWindow(2, $"打开串口时发生异常：{e.Message}");
+                SerialPortController.NotifyMainWindow(2, $"程序异常：打开串口时发生异常：{e.Message}");
                 throw;
             }
         }
@@ -185,7 +184,9 @@ namespace SerialPortTool.VIewModels
         [RelayCommand]
         public void OpenSaveConfigurationInterface()
         {
-            var saveConfigurationVm = new SaveConfigurationViewModel(_serialConnectionParameters);
+            SerialPortConfigSaver serialPortConfigSaver = new SerialPortConfigSaver();
+            serialPortConfigSaver.ConnectionParameters = _serialConnectionParameters;
+            var saveConfigurationVm = new SaveConfigurationViewModel(serialPortConfigSaver);
             var saveConfigurationWindow = new SaveConfigurationWindow
             { DataContext = saveConfigurationVm };
             saveConfigurationWindow.Show();

@@ -1,11 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using SerialPortTool.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using SerialPortTool.Core;
+using SerialPortTool.Models;
 
 namespace SerialPortTool.VIewModels
 {
@@ -13,38 +9,29 @@ namespace SerialPortTool.VIewModels
     {
         #region 配置参数
 
-        [ObservableProperty]
-        private SerialConnectionParameters? _parameters;
-
+        [ObservableProperty] private SerialPortConfigSaver _serialPortConfigSaver;
         [ObservableProperty] private string _selectedSendDataFormat;
         [ObservableProperty] private string _selectedReceiveDataFormat;
 
-        [ObservableProperty] private string _sendCommand;
-        [ObservableProperty] private string _configurationNote;
+        #endregion 配置参数
 
-        [ObservableProperty] private Uri? _coverURI;
-
-        #endregion
-
-        public SaveConfigurationViewModel(SerialConnectionParameters? parameters)
+        public SaveConfigurationViewModel(SerialPortConfigSaver serialPortConfigSaver)
         {
-            if (parameters == null) return;
-            Parameters = parameters;
-            SelectedSendDataFormat = Parameters.SendFormat.ToString();
-            SelectedReceiveDataFormat = Parameters.ReceiveFormat.ToString();
-            CoverURI = null;
+            SerialPortConfigSaver = serialPortConfigSaver;
+            SelectedSendDataFormat = serialPortConfigSaver.ConnectionParameters.SendFormat.ToString();
+            SelectedReceiveDataFormat = serialPortConfigSaver.ConnectionParameters.ReceiveFormat.ToString();
         }
 
         [RelayCommand]
         public void SaveConfiguration()
         {
-
+            ApplicationDataSaveService.Instance.SaveConfig(SerialPortConfigSaver);
         }
 
         [RelayCommand]
         public void SelectedImage(Uri uri)
         {
-
+            SerialPortConfigSaver.CoverImagePath = uri.LocalPath;
         }
     }
 }

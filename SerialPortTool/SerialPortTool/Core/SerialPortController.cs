@@ -3,7 +3,6 @@ using HandyControl.Controls;
 using SerialPortTool.Models;
 using System.IO.Ports;
 using System.Text;
-using System.Windows.Interop;
 
 namespace SerialPortTool.Core
 {
@@ -16,23 +15,22 @@ namespace SerialPortTool.Core
 
         private static readonly Lazy<SerialPortController> _instance =
             new Lazy<SerialPortController>(() => new SerialPortController());
+
         public static SerialPortController Instance => _instance.Value;
 
-
-        #endregion
+        #endregion 单例
 
         /// <summary>
         /// 当前串口
         /// </summary>
         public SerialPort? SerialPort { get; set; }
 
-        private readonly StringBuilder _message = new ();
+        private readonly StringBuilder _message = new();
 
         private SerialPortStatusInfo SerialPortStatusInfo { get; } = new();
 
         private SerialPortController()
         {
-
         }
 
         /// <summary>
@@ -72,24 +70,29 @@ namespace SerialPortTool.Core
         /// <returns></returns>
         public StringBuilder GetSerialPortBytes(ReceiveFormat receiveFormat)
         {
-            //获取缓冲区中的字节数
-            int availableBytes = SerialPort.BytesToRead;
-            Byte[] buffer = new Byte[availableBytes];
-            if (availableBytes <= 0) return _message;
-            //读取缓冲区中的数据
-            SerialPort.Read(buffer, 0, availableBytes);
-            string msg = "";
-            msg += $"[{DateTime.Now.ToString("HH:mm:ss.fff")}]  ";
-            switch (receiveFormat)
+            try
             {
-                case ReceiveFormat.Text:
-                    msg += Encoding.UTF8.GetString(buffer);
-                    break;
-                case ReceiveFormat.Hex:
-                    msg += BitConverter.ToString(buffer).Replace("-", " ");
-                    break;
+                //获取缓冲区中的字节数
+                var availableBytes = SerialPort!.BytesToRead;
+                var buffer = new Byte[availableBytes];
+                if (availableBytes <= 0) return _message;
+                //读取缓冲区中的数据
+                SerialPort.Read(buffer, 0, availableBytes);
+                var msg = "";
+                msg += $"[{DateTime.Now:HH:mm:ss.fff}]  ";
+                msg += receiveFormat switch
+                {
+                    ReceiveFormat.Text => Encoding.UTF8.GetString(buffer),
+                    ReceiveFormat.Hex => BitConverter.ToString(buffer).Replace("-", " "),
+                    _ => throw new ArgumentOutOfRangeException(nameof(receiveFormat), receiveFormat, null)
+                };
+                _message.Append($"{msg}\n");
             }
-            _message.Append($"{msg}\n");
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return _message;
         }
 
@@ -139,10 +142,12 @@ namespace SerialPortTool.Core
                 case SendFormat.Text:
                     SerialPort?.Write(content);
                     break;
+
                 case SendFormat.Hex:
                     var bytes = TextConversionManager.HexStringToByteArray(content);
                     SerialPort?.Write(bytes, 0, bytes.Length);
                     break;
+
                 default:
                     NotifyMainWindow(2, "程序异常错误");
                     throw new ArgumentOutOfRangeException(nameof(sendFormat), sendFormat, null);
@@ -189,21 +194,23 @@ namespace SerialPortTool.Core
         /// <param name="statusCode"></param>
         /// <param name="message"></param>
         /// <param name="isNotificationPopup"></param>
-        public void NotifyMainWindow(int statusCode, string mess,bool isNotificationPopup = true)
+        public void NotifyMainWindow(int statusCode, string mess, bool isNotificationPopup = true)
         {
             SerialPortStatusInfo.StatusCode = (StatusCode)statusCode;
             SerialPortStatusInfo.StatusInfo = mess;
             StrongReferenceMessenger.Default.Send(SerialPortStatusInfo);
-            if(isNotificationPopup)
+            if (isNotificationPopup)
             {
                 switch (statusCode)
                 {
                     case 0:
                         Growl.Success(mess);
                         break;
+
                     case 1:
                         Growl.Warning(mess);
                         break;
+
                     case 2:
                         Growl.Fatal(mess);
                         break;
