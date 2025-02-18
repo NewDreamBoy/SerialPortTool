@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Media.Imaging;
 
 namespace SerialPortTool.Models
 {
@@ -12,16 +8,13 @@ namespace SerialPortTool.Models
     public class ConfigurationItem
     {
         /// <summary>
-        /// 封面图
-        /// </summary>
-        public string ConfigurationImage { get; set; }
-        /// <summary>
         /// 配置名称
         /// </summary>
         public string ConfigurationName { get; set; }
+
         /// <summary>
-        /// 配置内容
+        /// 封面图
         /// </summary>
-        public SerialConnectionParameters ConnectionParameters { get; set; }
+        public BitmapImage CoverImage { get; set; }
     }
 }

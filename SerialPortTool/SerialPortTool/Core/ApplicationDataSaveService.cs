@@ -19,9 +19,13 @@ namespace SerialPortTool.Core
         private string AppDataFolderName { get; } = "SerialPortTool";
 
         /// <summary>
-        /// 应用程序配置文件目录
+        /// 配置文件目录
         /// </summary>
-        public string AppDataFolder { get; set; }
+        public string ConfigurationDirectory { get; set; }
+        /// <summary>
+        /// 应用程序数据保存路径
+        /// </summary>
+        public string AppDataPath { get; set; }
 
         private JsonSerializerOptions _options;
 
@@ -34,6 +38,9 @@ namespace SerialPortTool.Core
                 // 允许中文字符不转义
                 Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs)
             };
+
+            AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
+            ConfigurationDirectory = Path.Combine(AppDataPath, "SerialPortConfigs");
         }
 
         /// <summary>
@@ -41,10 +48,8 @@ namespace SerialPortTool.Core
         /// </summary>
         public void InitializeAppDataSaveFile()
         {
-            var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDataFolderName);
-            AppDataFolder = Path.Combine(appDataPath, "SerialPortConfigs");
-            if (!Directory.Exists(appDataPath)) Directory.CreateDirectory(appDataPath);
-            if (!Directory.Exists(AppDataFolder)) Directory.CreateDirectory(AppDataFolder);
+            if (!Directory.Exists(AppDataPath)) Directory.CreateDirectory(AppDataPath);
+            if (!Directory.Exists(ConfigurationDirectory)) Directory.CreateDirectory(ConfigurationDirectory);
         }
 
         /// <summary>
@@ -53,44 +58,39 @@ namespace SerialPortTool.Core
         /// <param name="configSaver"></param>
         public void SaveConfig(SerialPortConfigSaver configSaver)
         {
-            try
+            if (configSaver != null)
             {
-                if (configSaver != null)
-                {
-                    //配置文件夹处理
-                    var newConfigPath = Path.Combine(AppDataFolder, configSaver.ConfigName);
-                    if (!Directory.Exists(newConfigPath)) Directory.CreateDirectory(newConfigPath);
+                //配置文件夹处理
+                var newConfigPath = Path.Combine(ConfigurationDirectory, configSaver.ConfigName);
+                if (!Directory.Exists(newConfigPath)) Directory.CreateDirectory(newConfigPath);
 
-                    //处理图片
+                //处理图片
+                if (!string.IsNullOrEmpty(configSaver.CoverImagePath))
+                {
                     var extension = Path.GetExtension(configSaver.CoverImagePath);
                     string newConfigFilePath = Path.Combine(newConfigPath, $"封面图{extension}");
                     File.Copy(configSaver.CoverImagePath, newConfigFilePath, true);
                     //更新图片路劲
                     configSaver.CoverImagePath = newConfigFilePath;
-
-                    //创建Json文件夹
-                    var jsonPath = $"{newConfigPath}\\{configSaver.ConfigName}.Json";
-                    //配置参数序列化成Json格式字符串
-                    var configJson = SaveSerialPortParamsToJson(configSaver);
-                    //写入配置内容到Json
-                    File.WriteAllText(jsonPath, configJson);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
+                //创建Json文件夹
+                var jsonPath = $"{newConfigPath}\\{configSaver.ConfigName}.Json";
+                //配置参数序列化成Json格式字符串
+                var configJson = SaveSerialPortParamsToJson(configSaver);
+                //写入配置内容到Json
+                File.WriteAllText(jsonPath, configJson);
+            }
         }
 
         /// <summary>
         /// 获取配置
         /// </summary>
-        public void GetConfig()
+        public List<SerialPortConfigSaver> GetConfig()
         {
             List<SerialPortConfigSaver> configs = new List<SerialPortConfigSaver>();
             //获取所有配置文件夹
-            string[] configFolders = Directory.GetDirectories(AppDataFolder);
+            string[] configFolders = Directory.GetDirectories(ConfigurationDirectory);
             foreach (var folder in configFolders)
             {
                 // 获取文件夹中的所有JSON文件
@@ -99,9 +99,10 @@ namespace SerialPortTool.Core
                 {
                     string jsonContent = File.ReadAllText(jsonFile);
                     var config = JsonSerializer.Deserialize<SerialPortConfigSaver>(jsonContent);
-                    if(config != null) configs.Add(config);
+                    if (config != null) configs.Add(config);
                 }
             }
+            return configs;
         }
 
         /// <summary>

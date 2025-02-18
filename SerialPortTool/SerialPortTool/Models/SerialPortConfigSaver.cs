@@ -18,7 +18,7 @@
         /// <summary>
         /// 封面图名
         /// </summary>
-        public string CoverImagePath { get; set; }
+        public string CoverImagePath { get; set; } = "";
 
         /// <summary>
         /// 发送命令

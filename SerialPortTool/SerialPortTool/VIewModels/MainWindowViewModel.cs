@@ -22,11 +22,9 @@ namespace SerialPortTool.VIewModels
 
         public MainWindowViewModel()
         {
-            UserControl = _serialDebugControl;
-            StrongReferenceMessenger.Default.Register<MainWindowViewModel, SerialPortStatusInfo>(this, (r, m) => r.InfoText = m.StatusInfo);
             ApplicationDataSaveService.Instance.InitializeAppDataSaveFile();
-
-            ApplicationDataSaveService.Instance.GetConfig();
+            StrongReferenceMessenger.Default.Register<MainWindowViewModel, SerialPortStatusInfo>(this, (r, m) => r.InfoText = m.StatusInfo);
+            UserControl = _serialDebugControl;
 
         }
 

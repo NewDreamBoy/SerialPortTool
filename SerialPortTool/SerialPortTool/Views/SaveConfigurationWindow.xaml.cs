@@ -10,8 +10,17 @@ namespace SerialPortTool.Views
     {
         public SaveConfigurationWindow()
         {
-            //this.DataContext = new SaveConfigurationViewModel();
             InitializeComponent();
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if(DataContext is SaveConfigurationViewModel vm)
+            {
+                // 订阅关闭请求事件
+                vm.RequestClose += () => Close();
+            }
         }
     }
 }

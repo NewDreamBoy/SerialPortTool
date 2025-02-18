@@ -15,6 +15,14 @@ namespace SerialPortTool.VIewModels
 
         #endregion 配置参数
 
+        #region 事件
+
+        public event Action? RequestClose;
+
+        #endregion
+
+        private SerialPortController SerialPortController => SerialPortController.Instance;
+
         public SaveConfigurationViewModel(SerialPortConfigSaver serialPortConfigSaver)
         {
             SerialPortConfigSaver = serialPortConfigSaver;
@@ -22,12 +30,30 @@ namespace SerialPortTool.VIewModels
             SelectedReceiveDataFormat = serialPortConfigSaver.ConnectionParameters.ReceiveFormat.ToString();
         }
 
+
+        /// <summary>
+        /// 保存配置
+        /// </summary>
         [RelayCommand]
         public void SaveConfiguration()
         {
-            ApplicationDataSaveService.Instance.SaveConfig(SerialPortConfigSaver);
+            try
+            {
+                ApplicationDataSaveService.Instance.SaveConfig(SerialPortConfigSaver);
+                RequestClose?.Invoke();
+                SerialPortController.NotifyMainWindow(0, "保存配置成功");
+            }
+            catch (Exception ex)
+            {
+                SerialPortController.NotifyMainWindow(3, "保存配置时程序发送异常，保存失败");
+                throw;
+            }
         }
 
+        /// <summary>
+        /// 选择图片
+        /// </summary>
+        /// <param name="uri"></param>
         [RelayCommand]
         public void SelectedImage(Uri uri)
         {

@@ -25,8 +25,13 @@
                 Text="{Binding Title}"
                 TextAlignment="Center" />
         </Grid>
+
         <Grid Row="1">
-            <ListBox Margin="10" hc:ScrollViewer.IsInertiaEnabled="True" ItemsSource="{Binding ConfigurationItems}" Style="{DynamicResource WrapPanelHorizontalListBox}">
+            <ListBox
+                Margin="10"
+                hc:ScrollViewer.IsInertiaEnabled="True"
+                ItemsSource="{Binding ConfigurationItems}"
+                Style="{DynamicResource WrapPanelHorizontalListBox}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type data:ConfigurationItem}">
                         <hc:Card
@@ -34,24 +39,22 @@
                             Margin="8"
                             BorderThickness="0"
                             Effect="{StaticResource EffectShadow2}"
-                            Footer="{Binding ConfigurationImage}">
-                            <Border Width="160" Height="160" CornerRadius="4,4,0,0" Style="{StaticResource BorderClip}">
-                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ConfigurationImage}" TextWrapping="Wrap" />
+                            Footer="{Binding CoverImage}">
+                            <Border CornerRadius="4,4,0,0" Style="{StaticResource BorderClip}">
+                                <Image
+                                    Width="200"
+                                    Height="150"
+                                    Source="{Binding CoverImage}"
+                                    Stretch="Uniform" />
                             </Border>
                             <hc:Card.FooterTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="10">
+                                        <!--  Card 的一级内容  -->
                                         <TextBlock
                                             HorizontalAlignment="Left"
                                             Style="{StaticResource TextBlockLargeBold}"
                                             Text="{Binding DataContext.ConfigurationName, RelativeSource={RelativeSource AncestorType=hc:Card}}"
-                                            TextTrimming="CharacterEllipsis"
-                                            TextWrapping="NoWrap" />
-                                        <TextBlock
-                                            Margin="0,6,0,0"
-                                            HorizontalAlignment="Left"
-                                            Style="{StaticResource TextBlockDefault}"
-                                            Text="123"
                                             TextTrimming="CharacterEllipsis"
                                             TextWrapping="NoWrap" />
                                     </StackPanel>

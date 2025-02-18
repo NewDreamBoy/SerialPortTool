@@ -10,8 +10,8 @@ namespace SerialPortTool.Views
     {
         public MySettingsControl()
         {
-            this.DataContext = new MySettingsControlViewModel();
             InitializeComponent();
+            this.DataContext = new MySettingsControlViewModel();
         }
     }
 }

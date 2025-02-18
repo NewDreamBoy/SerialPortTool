@@ -8,7 +8,7 @@ namespace SerialPortTool.Core.Interface
     public interface IApplicationDataSaveService
     {
         /// <summary>
-        ///
+        /// 初始化
         /// </summary>
         void InitializeAppDataSaveFile();
 
@@ -20,7 +20,7 @@ namespace SerialPortTool.Core.Interface
         /// <summary>
         /// 获取配置文件
         /// </summary>
-        void GetConfig();
+        List<SerialPortConfigSaver> GetConfig();
 
         /// <summary>
         /// 保存串口参数到Json文件

@@ -1,4 +1,5 @@
 ﻿using SerialPortTool.Models;
+using System.Windows.Media.Imaging;
 
 namespace SerialPortTool.Core
 {
@@ -14,96 +15,38 @@ namespace SerialPortTool.Core
 
         #endregion
 
+        public List<SerialPortConfigSaver> SerialPortConfigSavers { get; set; }
+        private List<ConfigurationItem> _configurationItems;
+
         public ConfigurationManager()
-        { }
-
-
-        public List<ConfigurationItem> GetConfigurationItems()
         {
-            return null;
+            SerialPortConfigSavers = ApplicationDataSaveService.Instance.GetConfig();
         }
-
-        //TODO 获取所有的配置项
-        //TODO 反序列化所有的配置项
-        //TODO 添加到VM中
-
 
         /// <summary>
         /// 获取用户所有的配置项
         /// </summary>
         /// <returns></returns>
-        public List<ConfigurationItem> GetConfigurationItems1()
+        public List<ConfigurationItem> GetConfigurationItems()
         {
-
-            return null;
-
-
-
-
-
-            //List<ConfigurationItem> temodata = new List<ConfigurationItem>()
-            //{
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置1",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置2",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置3",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置4",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置5",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置6",
-            //        ConnectionParameters = null
-            //    },       new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置7",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置8",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置9",
-            //        ConnectionParameters = null
-            //    },
-            //    new()
-            //    {
-            //        ConfigurationImage = "Resources/Configuration/Configuration1.png",
-            //        ConfigurationName = "配置10",
-            //        ConnectionParameters = null
-            //    }
-            //};
-            //return temodata;
+            _configurationItems = new List<ConfigurationItem>();
+            if (SerialPortConfigSavers == null) return _configurationItems;
+            foreach (var item in SerialPortConfigSavers)
+            {
+                ConfigurationItem configurationItem = new ConfigurationItem();
+                if(!string.IsNullOrEmpty(item.CoverImagePath))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(item.CoverImagePath, UriKind.RelativeOrAbsolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad; 
+                    bitmap.EndInit();
+                    configurationItem.CoverImage = bitmap;
+                }
+                configurationItem.ConfigurationName = item.ConfigName;
+                _configurationItems.Add(configurationItem);
+            }
+            return _configurationItems;
         }
     }
 }

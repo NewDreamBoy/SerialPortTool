@@ -191,9 +191,9 @@ namespace SerialPortTool.Core
         /// <summary>
         /// 通知主窗口
         /// </summary>
-        /// <param name="statusCode"></param>
-        /// <param name="message"></param>
-        /// <param name="isNotificationPopup"></param>
+        /// <param name="statusCode">状态码 0 成功 | 1 警告 | 2 严重 </param>
+        /// <param name="mess">错误信息</param>
+        /// <param name="isNotificationPopup">是否弹出通知</param>
         public void NotifyMainWindow(int statusCode, string mess, bool isNotificationPopup = true)
         {
             SerialPortStatusInfo.StatusCode = (StatusCode)statusCode;
