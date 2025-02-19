@@ -11,6 +11,7 @@ namespace SerialPortTool.Views
         public SaveConfigurationWindow()
         {
             InitializeComponent();
+            Loaded -= OnLoaded;
             Loaded += OnLoaded;
         }
 

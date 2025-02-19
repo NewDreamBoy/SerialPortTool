@@ -2,6 +2,7 @@
     x:Class="SerialPortTool.Views.SaveConfigurationWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ap="clr-namespace:SerialPortTool.AttachedProperties"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
@@ -91,15 +92,16 @@
                     Header="封面图："
                     Style="{StaticResource GroupBoxOriginal}">
                     <hc:ImageSelector
+                        x:Name="MyImageSelector"
                         Width="80"
                         Height="80"
-                        HorizontalAlignment="Left">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="ImageSelected">
-                                <i:InvokeCommandAction Command="{Binding SelectedImageCommand}" CommandParameter="{Binding Uri, RelativeSource={RelativeSource AncestorType=hc:ImageSelector}}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </hc:ImageSelector>
+                        HorizontalAlignment="Left" />
+                    <!--  ap:ImageSelectorHelper.BindableUri="{Binding SerialPortConfigSaver.CoverImagePath}" />  -->
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ImageSelected">
+                            <i:InvokeCommandAction Command="{Binding SelectedImageCommand}" CommandParameter="{Binding Uri, RelativeSource={RelativeSource AncestorType=hc:ImageSelector}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                 </GroupBox>
             </StackPanel>
         </Grid>

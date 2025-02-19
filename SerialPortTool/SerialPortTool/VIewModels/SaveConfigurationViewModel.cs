@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
+using System.Windows.Media;
 
 namespace SerialPortTool.VIewModels
 {
@@ -12,6 +13,7 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty] private SerialPortConfigSaver _serialPortConfigSaver;
         [ObservableProperty] private string _selectedSendDataFormat;
         [ObservableProperty] private string _selectedReceiveDataFormat;
+        [ObservableProperty] private Brush _myImageBrush;
 
         #endregion 配置参数
 
@@ -19,7 +21,7 @@ namespace SerialPortTool.VIewModels
 
         public event Action? RequestClose;
 
-        #endregion
+        #endregion 事件
 
         private SerialPortController SerialPortController => SerialPortController.Instance;
 
@@ -29,7 +31,6 @@ namespace SerialPortTool.VIewModels
             SelectedSendDataFormat = serialPortConfigSaver.ConnectionParameters.SendFormat.ToString();
             SelectedReceiveDataFormat = serialPortConfigSaver.ConnectionParameters.ReceiveFormat.ToString();
         }
-
 
         /// <summary>
         /// 保存配置
