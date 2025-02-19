@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
 
@@ -12,8 +13,13 @@ namespace SerialPortTool.VIewModels
 
         public MySettingsControlViewModel()
         {
-            Title = "配置管理";
-            ConfigurationItems = ConfigurationManager.Instance.GetConfigurationItems();
+            Title = "配置管理1";
+        }
+
+        [RelayCommand]
+        public void ShowSettings(ConfigurationItem item)
+        {
+            var config = ConfigurationManager.Instance.GetConfigurationItems(item.ConfigurationName);
         }
     }
 }

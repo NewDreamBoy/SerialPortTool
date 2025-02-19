@@ -14,6 +14,14 @@ namespace SerialPortTool.Views
         {
             InitializeComponent();
             this.DataContext = new MainWindowViewModel();
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            var configItems = ApplicationDataSaveService.Instance.GetConfig();
+            // 异步加载配置项
+            await ConfigurationManager.Instance.GetConfigurationItemsAsync(configItems);
         }
     }
 }

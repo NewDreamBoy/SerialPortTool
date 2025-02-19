@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:data="clr-namespace:SerialPortTool.Models"
     xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:SerialPortTool.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="550"
@@ -40,6 +41,13 @@
                             BorderThickness="0"
                             Effect="{StaticResource EffectShadow2}"
                             Footer="{Binding CoverImage}">
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseLeftButtonUp">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.ShowSettingsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
                             <Border CornerRadius="4,4,0,0" Style="{StaticResource BorderClip}">
                                 <Image
                                     Width="200"
@@ -47,6 +55,7 @@
                                     Source="{Binding CoverImage}"
                                     Stretch="Uniform" />
                             </Border>
+
                             <hc:Card.FooterTemplate>
                                 <DataTemplate>
                                     <StackPanel Margin="10">

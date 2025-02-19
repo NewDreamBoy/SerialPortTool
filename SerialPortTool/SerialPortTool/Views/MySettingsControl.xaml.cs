@@ -1,4 +1,6 @@
-﻿using SerialPortTool.VIewModels;
+﻿using SerialPortTool.Core;
+using SerialPortTool.VIewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SerialPortTool.Views
@@ -8,10 +10,19 @@ namespace SerialPortTool.Views
     /// </summary>
     public partial class MySettingsControl : UserControl
     {
+        private MySettingsControlViewModel vm;
+
         public MySettingsControl()
         {
             InitializeComponent();
-            this.DataContext = new MySettingsControlViewModel();
+            vm = new MySettingsControlViewModel();
+            this.DataContext = vm;
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            vm.ConfigurationItems = ConfigurationManager.Instance.ConfigurationItems;
         }
     }
 }

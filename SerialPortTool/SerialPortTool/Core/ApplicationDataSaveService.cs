@@ -22,6 +22,7 @@ namespace SerialPortTool.Core
         /// 配置文件目录
         /// </summary>
         public string ConfigurationDirectory { get; set; }
+
         /// <summary>
         /// 应用程序数据保存路径
         /// </summary>
