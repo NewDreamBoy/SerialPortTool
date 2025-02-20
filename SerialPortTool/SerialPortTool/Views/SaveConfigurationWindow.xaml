@@ -92,16 +92,15 @@
                     Header="封面图："
                     Style="{StaticResource GroupBoxOriginal}">
                     <hc:ImageSelector
-                        x:Name="MyImageSelector"
                         Width="80"
                         Height="80"
-                        HorizontalAlignment="Left" />
-                    <!--  ap:ImageSelectorHelper.BindableUri="{Binding SerialPortConfigSaver.CoverImagePath}" />  -->
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ImageSelected">
-                            <i:InvokeCommandAction Command="{Binding SelectedImageCommand}" CommandParameter="{Binding Uri, RelativeSource={RelativeSource AncestorType=hc:ImageSelector}}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                        HorizontalAlignment="Left">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="ImageSelected">
+                                <i:InvokeCommandAction Command="{Binding SelectedImageCommand}" CommandParameter="{Binding Uri, RelativeSource={RelativeSource AncestorType=hc:ImageSelector}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </hc:ImageSelector>
                 </GroupBox>
             </StackPanel>
         </Grid>

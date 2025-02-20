@@ -62,6 +62,7 @@
                                         <!--  Card 的一级内容  -->
                                         <TextBlock
                                             HorizontalAlignment="Left"
+                                            FontSize="15"
                                             Style="{StaticResource TextBlockLargeBold}"
                                             Text="{Binding DataContext.ConfigurationName, RelativeSource={RelativeSource AncestorType=hc:Card}}"
                                             TextTrimming="CharacterEllipsis"
