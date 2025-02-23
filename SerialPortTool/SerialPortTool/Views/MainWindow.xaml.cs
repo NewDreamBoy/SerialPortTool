@@ -19,9 +19,8 @@ namespace SerialPortTool.Views
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var configItems = ApplicationDataSaveService.Instance.GetConfig();
             // 异步加载配置项
-            await ConfigurationManager.Instance.GetConfigurationItemsAsync(configItems);
+            await ConfigurationManager.Instance.GetConfigurationItemsAsync();
         }
     }
 }

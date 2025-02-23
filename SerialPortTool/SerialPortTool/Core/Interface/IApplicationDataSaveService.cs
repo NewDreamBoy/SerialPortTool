@@ -18,6 +18,12 @@ namespace SerialPortTool.Core.Interface
         void SaveConfig(SerialPortConfigSaver configSaver);
 
         /// <summary>
+        /// 删除配置
+        /// </summary>
+        /// <param name="configSaver"></param>
+        void DeleteConfig(SerialPortConfigSaver configSaver);
+
+        /// <summary>
         /// 获取配置文件
         /// </summary>
         List<SerialPortConfigSaver> GetConfig();

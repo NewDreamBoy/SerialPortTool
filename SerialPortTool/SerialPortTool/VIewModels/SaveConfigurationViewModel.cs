@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SerialPortTool.Core;
 using SerialPortTool.Models;
 using System.Windows.Media;
@@ -14,11 +15,17 @@ namespace SerialPortTool.VIewModels
         [ObservableProperty] private string _selectedSendDataFormat;
         [ObservableProperty] private string _selectedReceiveDataFormat;
         [ObservableProperty] private Brush _myImageBrush;
+        [ObservableProperty] private bool _isDeleteButtonVisible;
+
+        RefreshConfigMessage RefreshConfigMessage => new RefreshConfigMessage();
 
         #endregion 配置参数
 
         #region 事件
 
+        /// <summary>
+        /// 关闭窗口事件
+        /// </summary>
         public event Action? RequestClose;
 
         #endregion 事件
@@ -42,6 +49,8 @@ namespace SerialPortTool.VIewModels
             {
                 ApplicationDataSaveService.Instance.SaveConfig(SerialPortConfigSaver);
                 RequestClose?.Invoke();
+                //发送刷新界面通知
+                StrongReferenceMessenger.Default.Send(RefreshConfigMessage);
                 SerialPortController.NotifyMainWindow(0, "保存配置成功");
             }
             catch (Exception ex)
@@ -49,6 +58,19 @@ namespace SerialPortTool.VIewModels
                 SerialPortController.NotifyMainWindow(3, "保存配置时程序发送异常，保存失败");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 删除配置
+        /// </summary>
+        [RelayCommand]
+        public void DeleteConfiguration(SerialPortConfigSaver serialPortConfigSaver)
+        {
+            ApplicationDataSaveService.Instance.DeleteConfig(serialPortConfigSaver);
+            RequestClose?.Invoke();
+            //发送刷新界面通知
+            StrongReferenceMessenger.Default.Send(RefreshConfigMessage);
+            SerialPortController.NotifyMainWindow(0, "删除配置成功");
         }
 
         /// <summary>

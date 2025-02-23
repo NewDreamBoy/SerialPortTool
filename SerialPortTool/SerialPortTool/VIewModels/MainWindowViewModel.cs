@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SerialPortTool.Core;
-using SerialPortTool.Core.Interface;
 using SerialPortTool.Models;
 using SerialPortTool.Views;
 using System.Windows.Controls;

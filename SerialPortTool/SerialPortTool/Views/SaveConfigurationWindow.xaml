@@ -105,12 +105,23 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2">
-            <Button
-                Width="120"
-                Margin="5,0,0,0"
-                Command="{Binding SaveConfigurationCommand}"
-                Content="保存当前配置"
-                Style="{StaticResource ButtonPrimary}" />
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    Width="120"
+                    Margin="5,0,0,0"
+                    Command="{Binding SaveConfigurationCommand}"
+                    Content="保存当前配置"
+                    Style="{StaticResource ButtonPrimary}" />
+                <Button
+                    Width="120"
+                    Margin="5,0,0,0"
+                    Command="{Binding DeleteConfigurationCommand}"
+                    CommandParameter="{Binding DataContext.SerialPortConfigSaver, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Content="删除当前配置"
+                    Style="{StaticResource ButtonDanger}"
+                    Visibility="{Binding IsDeleteButtonVisible, Converter={StaticResource Boolean2VisibilityConverter}}" />
+            </StackPanel>
+
         </Grid>
 
     </Grid>

@@ -23,8 +23,9 @@ namespace SerialPortTool.Core
         /// 异步获取用户所有的配置项
         /// </summary>
         /// <returns></returns>
-        public async Task GetConfigurationItemsAsync(List<SerialPortConfigSaver> serialPortConfigSavers)
+        public async Task GetConfigurationItemsAsync()
         {
+            List<SerialPortConfigSaver> serialPortConfigSavers = ApplicationDataSaveService.Instance.GetConfig();
             // 初始化集合
             var items = new List<ConfigurationItem>();
 

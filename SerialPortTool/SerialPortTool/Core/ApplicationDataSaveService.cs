@@ -85,6 +85,17 @@ namespace SerialPortTool.Core
         }
 
         /// <summary>
+        /// 删除配置
+        /// </summary>
+        /// <param name="configSaver"></param>
+        public void DeleteConfig(SerialPortConfigSaver configSaver)
+        {
+            string[] configFolders = Directory.GetDirectories(ConfigurationDirectory);
+            var folderToDelete = configFolders.FirstOrDefault(folder => Path.GetFileName(folder).Equals(configSaver.ConfigName, StringComparison.OrdinalIgnoreCase));
+            if(folderToDelete!=null) Directory.Delete(folderToDelete, true);
+        }
+
+        /// <summary>
         /// 获取配置
         /// </summary>
         public List<SerialPortConfigSaver> GetConfig()

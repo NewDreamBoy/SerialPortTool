@@ -187,6 +187,7 @@ namespace SerialPortTool.VIewModels
             SerialPortConfigSaver serialPortConfigSaver = new SerialPortConfigSaver();
             serialPortConfigSaver.ConnectionParameters = _serialConnectionParameters;
             var saveConfigurationVm = new SaveConfigurationViewModel(serialPortConfigSaver);
+            saveConfigurationVm.IsDeleteButtonVisible = false;
             var saveConfigurationWindow = new SaveConfigurationWindow
             { DataContext = saveConfigurationVm };
             saveConfigurationWindow.Show();
